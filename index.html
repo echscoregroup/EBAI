@@ -1,10 +1,110 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>EBAI Test Site</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ECHS Beneficiary Virtual Assistant — Cdr Test v1.0.3</title>
+<style>
+:root{--navy:#062B5B;--navy2:#041F43;--ink:#1B2A3A;--muted:#5E6D7D;--bg:#F3F6F9;--card:#fff;--line:#D8E0E8;--answer:#F7FAFD;--green:#147A45;--greenbg:#EEF8F2;--danger:#8A2635}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:17px}
+.header{background:var(--navy);color:#fff}.header-inner{max-width:1000px;margin:auto;padding:24px 20px 22px}.brand{margin:0;font-size:31px;line-height:1;font-weight:850;letter-spacing:.02em}.scope{margin-top:10px;font-size:18px;font-weight:800;line-height:1.35}.tagline{margin-top:6px;font-size:15px;opacity:.92}
+.wrap{max-width:1000px;margin:22px auto;padding:0 18px 35px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px rgba(18,42,67,.07)}
+.prompt{font-size:19px;font-weight:800;margin:0 0 10px;color:var(--navy)}textarea{width:100%;min-height:125px;resize:vertical;border:1px solid #BFCBD7;border-radius:10px;padding:14px;font:inherit;line-height:1.5;color:var(--ink);background:#fff}textarea:focus{outline:3px solid rgba(6,43,91,.14);border-color:var(--navy)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:9px;padding:12px 18px;min-height:48px;font-size:16px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff}button:hover{background:var(--navy2)}button.secondary{background:#E9EFF5;color:var(--navy)}button.secondary:hover{background:#DDE7F0}
+.result{margin-top:22px}.label{font-size:14px;font-weight:850;letter-spacing:.07em;color:var(--navy);margin-top:20px;text-transform:uppercase}.question{font-size:18px;line-height:1.55;margin-top:6px;padding:12px 14px;background:#F8FAFC;border-radius:9px}.answer-box{margin-top:7px;background:var(--answer);border-left:6px solid var(--navy);border-radius:10px;padding:17px 18px}.answer{font-size:19px;line-height:1.62;white-space:pre-wrap;margin:0}
+.instruction{margin-top:17px;padding:13px 15px;background:#F2F5F8;border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1.5;color:#465665}.instruction strong{color:var(--navy)}
+.video-card{margin-top:17px;background:var(--greenbg);border:1px solid #CBE8D6;border-radius:12px;padding:14px 16px}.video-kicker{font-size:13px;font-weight:850;color:#2E6241;letter-spacing:.06em;text-transform:uppercase}.video-title{font-size:17px;font-weight:750;color:#173C27;margin:3px 0 9px;line-height:1.4}.video{display:inline-flex;align-items:center;gap:8px;text-decoration:none;background:var(--green);color:#fff;border-radius:9px;padding:11px 15px;font-weight:800;min-height:46px}.video:hover{background:#0E5C37}
+.post-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.post-actions button{min-width:190px}.close-note{text-align:center;color:var(--muted);font-size:13px;margin-top:10px}.footer{text-align:center;color:#687687;font-size:13px;line-height:1.5;padding:5px 10px 0}
+.qa-window{scroll-margin-top:18px}.qa-window.closed .label,.qa-window.closed .question,.qa-window.closed .answer-box,.qa-window.closed .instruction,.qa-window.closed .video-card{display:none}.qa-window.closed .post-actions{border-top:0;margin-top:0;padding-top:0}.qa-window.closed .post-actions button.secondary::after{content:" — OPEN"}.question-window.next-window{border:2px solid var(--navy);box-shadow:0 5px 22px rgba(6,43,91,.12)}.hidden{display:none!important}@media(max-width:600px){body{font-size:16px}.header-inner{padding:22px 17px}.brand{font-size:28px}.scope{font-size:16px}.wrap{margin:13px auto;padding:0 12px 28px}.card{padding:17px;border-radius:13px}.prompt{font-size:18px}textarea{min-height:140px}.answer{font-size:18px}.question{font-size:17px}.actions,.post-actions{display:block}.actions button,.post-actions button,.video{width:100%;justify-content:center;margin-bottom:8px}.post-actions button{min-width:0}}
+</style>
 </head>
 <body>
-    <h1>EBAI TEST SITE<- BUILD 2/h1>
-    <p>BUILD 2 — URL replacement test.</p>
-</body>
-</html>
+<header class="header"><div class="header-inner"><h1 class="brand">ECHS BENEFICIARY VIRTUAL ASSISTANT</h1><div class="scope">ECHS BENEFICIARY QUERIES — APPROVED INFORMATION ONLY</div><div class="tagline">Clear Answers - Zero Confusion - Empowering You</div></div></header>
+<main class="wrap">
+<div id="history" aria-live="polite"></div>
+<section class="card question-window" id="questionWindow">
+<p class="prompt">YOUR QUESTION</p>
+<textarea id="q" aria-label="Enter your ECHS question" placeholder="Type your full question here..."></textarea>
+<div class="actions"><button id="getBtn" onclick="answerQuestion()">GET ANSWER</button></div>
+</section>
+<div class="footer">Approved ECHS information only. Please ask your complete question so that the correct verified answer can be provided.</div>
+<div class="footer" style="margin-top:8px">CDR TEST BUILD v1.0.3 — Baseline 220826</div></main>
+<script>
+const RULE={
+ fallback:"VERIFIED ANSWER NOT AVAILABLE AT THIS TIME\nFor further guidance, please contact Cdr Santhanam through WhatsApp.",
+ pcGeneric:"Please enter your full Polyclinic (PC) question so that the correct verified answer can be provided.",
+ pcReferral:"The ECHS Polyclinic (PC) issues referrals based on the doctor's advice.",
+ emergency:"In a medical emergency, a valid ECHS Card or valid Temporary Slip permits direct treatment at Military Hospital (MH) or Empanelled Hospital (EH) without Polyclinic (PC) referral. Age is not a condition.",
+ medicines:"Medicines are issued by the ECHS Polyclinic (PC), irrespective of where the prescription was issued. A prescription may be from an ECHS Polyclinic (PC), Empanelled Hospital (EH) or Military Hospital (MH).",
+ ehBelow70:"For non-emergency OPD consultation with a specialist at an Empanelled Hospital (EH), a beneficiary below 70 years requires a Polyclinic (PC) referral.",
+ eh70:"A beneficiary aged 70 years and above does not require a Polyclinic (PC) referral for non-emergency OPD consultation with a specialist at an Empanelled Hospital (EH).",
+ ehGeneric:"For non-emergency OPD consultation with a specialist at Empanelled Hospital (EH), a beneficiary below 70 years requires a Polyclinic (PC) referral. A beneficiary aged 70 years and above does not require a Polyclinic (PC) referral for direct OPD specialist consultation.",
+ mh75:"An eligible beneficiary aged 75 years and above does not require a Polyclinic (PC) referral for Military Hospital (MH) Specialist OPD consultation, on the designated Specialist OPD day.",
+ mhBelow75:"An eligible beneficiary below 75 years requires a Polyclinic (PC) referral for non-emergency Military Hospital (MH) Specialist OPD consultation.",
+ dep25:"A Dependent Beneficiary aged 25 years and above is not eligible for treatment at Military Hospital (MH) — OPD or IPD — under non-emergency medical conditions.",
+ below25:"ESM, Spouse and Dependent Beneficiaries below 25 years can go to Military Hospital (MH) for treatment only when the Polyclinic (PC) issues a referral.",
+ over25:"A beneficiary above 25 years, other than ESM and Spouse, is not eligible for non-emergency treatment at Military Hospital (MH) and is referred by the Polyclinic (PC) to an Empanelled Hospital (EH).",
+ mhGeneric:"An eligible beneficiary requiring non-emergency Military Hospital (MH) Specialist OPD consultation must obtain a Polyclinic (PC) referral. Military Hospital (MH) Specialist consultation is speciality-specific and on designated Specialist OPD days.",
+ mhToEh:"A Military Hospital (MH) Specialist may recommend treatment at an Empanelled Hospital (EH). The formal referral is issued by the Polyclinic (PC) based on the doctor's advice.",
+ mhEligibility:"ESM, Spouse and Dependent Beneficiaries below 25 years are eligible for treatment at Military Hospital (MH) — OPD or IPD. For non-emergency treatment, a Polyclinic (PC) referral is required. Dependent Beneficiaries aged 25 years and above are not eligible for non-emergency Military Hospital (MH) treatment. Beneficiaries above 25 years, other than ESM and Spouse, are also not eligible for non-emergency Military Hospital (MH) treatment. For an eligible beneficiary aged 75 years and above, direct Military Hospital (MH) Specialist OPD consultation is permitted without Polyclinic (PC) referral on the designated Specialist OPD day."
+};
+const VIDEO={
+ v148:{label:"V148",number:"148",title:"Step-by-Step Guide to Book OPD Appointment at Military Hospital using ORS",url:"https://youtu.be/9LS3c7S5sNE?t=124",time:"2:04"},
+ v144:{label:"V144",number:"144",title:"Military Hospital Specialist → Empanelled Hospital Referral",url:"https://youtu.be/bD458-tvyDI?t=427",time:"7:07"}
+};
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
+function norm(q){return (q||'').toLowerCase().trim()
+ .replace(/military\s+hops?/g,'military hospital').replace(/mily\s+hosp/g,'military hospital').replace(/mily\s+hops?/g,'military hospital').replace(/mily\s+hospital/g,'military hospital').replace(/military\s+hosp/g,'military hospital').replace(/mil\s+hosp/g,'military hospital').replace(/\bmh\s+hospital\b/g,'military hospital').replace(/\bmh\b/g,'military hospital')
+ .replace(/empanel+ed\s+hospital/g,'empanelled hospital').replace(/empanel+ed\s+hosp/g,'empanelled hospital').replace(/emp\s+hops?/g,'empanelled hospital').replace(/emp\s+hosp/g,'empanelled hospital').replace(/empanel+\s+hospital/g,'empanelled hospital').replace(/\beh\b/g,'empanelled hospital')
+ .replace(/polyclinics?/g,'polyclinic').replace(/poly\s+clinic/g,'polyclinic').replace(/\bpc\b/g,'polyclinic');}
+function getAge(x){let m=x.match(/\b(?:i am|i'm|age|aged)\s*(?:is\s*)?(\d{1,3})(?:-year-old|\s*years?\s*old)?\b/);if(!m)m=x.match(/\b(\d{1,3})-year-old\b/);if(!m)m=x.match(/\b(\d{1,3})\s*(?:years?|yrs?)\s*old\b/);if(!m)m=x.match(/\b(?:at|aged)\s+(\d{1,3})\b/);return m?parseInt(m[1],10):null;}
+function hasReferral(x){return /\b(?:refer|referral|referrals|referred)\b/.test(x)}
+function isNegated(x,term){return new RegExp('\\bnot\\s+(?:an?\\s+)?'+term+'\\b').test(x);}
+function getResult(q){
+ const x=norm(q); if(!q||!x)return {a:RULE.fallback};
+ if(q.split(/\s+/).length<=2&&!/\b(can|do|does|will|where|who|how|what|need|required|eligible|prescri|referral|treatment|appointment)\b/.test(x))return {a:RULE.fallback};
+ if(/\bvideo\b/.test(x)&&/\b(medicine|medicines|prescription|pharmacy)\b/.test(x))return {a:RULE.fallback};
+ if(/\bemergency\b/.test(x)&&!/\bnon[- ]emergency\b/.test(x))return {a:RULE.emergency};
+ if(/\b(medicine|medicines|prescription|pharmacy)\b/.test(x))return {a:RULE.medicines};
+ const n=getAge(x), mh=/military hospital/.test(x), eh=/empanelled hospital/.test(x), pc=/polyclinic/.test(x);
+ const dep=/\bdependent(?: beneficiary)?\b/.test(x), esm=/\besm\b/.test(x)&&!isNegated(x,'esm'), spouse=/\bspouse\b/.test(x)&&!isNegated(x,'spouse'), ordinary=/\bnot\s+esm\s+or\s+spouse\b/.test(x);
+ const beneficiary=/\bbeneficiary\b/.test(x), eligible=/\beligible\b/.test(x);
+ // Combined MH -> EH referral must precede generic MH age routing.
+ if(mh && eh && hasReferral(x)) return {a:RULE.mhToEh,v:VIDEO.v144};
+ // Explicit MH beneficiary/age partitions take precedence over generic MH wording.
+ if(mh){
+   if(/\b(?:book|booking|appointment)\b/.test(x)) return {a:RULE.mhGeneric,v:VIDEO.v148};
+   if(dep && n!==null && n>=25) return {a:RULE.dep25};
+   if((dep||esm||spouse) && n!==null && n<25) return {a:RULE.below25};
+   const specialistIntent=/\b(?:specialist|opd|referral|refer|consult)\b/.test(x);
+   if(n!==null && n>=75 && !dep) return {a:RULE.mh75};
+   if(n!==null && n<75 && specialistIntent) return {a:RULE.mhBelow75};
+   if(n!==null && n>25 && (ordinary || (!esm && !spouse && !dep)) && /\btreatment\b/.test(x)) return {a:RULE.over25};
+   if(n!==null && n<75 && (esm||spouse)) return {a:RULE.mhBelow75};
+   if(n!==null && n<75 && (eligible||beneficiary||esm||spouse) && !ordinary) return {a:RULE.mhBelow75};
+   if(/\b(?:who|what|which)\b/.test(x)&&/\b(?:eligible|eligibility|can get|receive|get treatment|treatment)\b/.test(x)) return {a:RULE.mhEligibility};
+   if(/\b(?:specialist|opd|non[- ]emergency|referral|treatment)\b/.test(x)){return {a:RULE.mhGeneric};}
+   return {a:RULE.fallback};
+ }
+ if(eh){
+   if(n!==null&&n>=70)return {a:RULE.eh70};
+   if(n!==null&&n<70)return {a:RULE.ehBelow70};
+   if(/\b(?:referral|refer|specialist|opd|consult|treatment)\b/.test(x))return {a:RULE.ehGeneric};
+   return {a:RULE.fallback};
+ }
+ if(pc){
+   if(hasReferral(x))return {a:RULE.pcReferral};
+   return {a:RULE.pcGeneric};
+ }
+ return {a:RULE.fallback};
+}
+let questionCount=0;
+function renderResult(q,r){let html='<div class="label">YOUR QUESTION</div><div class="question">'+esc(q)+'</div><div class="label">ANSWER</div><div class="answer-box"><p class="answer">'+esc(r.a)+'</p></div>';
+ if(r.v)html+='<div class="video-card"><div class="video-kicker">VERIFIED VIDEO</div><div class="video-title">VIDEO #'+esc(r.v.number)+' — '+esc(r.v.title)+'</div><a class="video" target="_blank" rel="noopener noreferrer" href="'+r.v.url+'">WATCH VIDEO — STARTS AT '+esc(r.v.time)+'</a></div>';
+ html+='<div class="instruction"><strong>Instructions:</strong> Read the answer above. If you need help with another ECHS question, use <strong>ASK ANOTHER QUESTION</strong> below. When you have finished, select <strong>CLOSE</strong>.</div>';
+ html+='<div class="post-actions"><button onclick="askAnotherQuestion()">ASK ANOTHER QUESTION</button><button class="secondary" onclick="closeAnswer(this)">CLOSE</button></div>'; return html;}
+function answerQuestion(){const input=document.querySelector('#questionWindow textarea');if(!input)return;const q=input.value.trim();if(!q){input.focus();return;}const r=getResult(q);questionCount++;const card=document.createElement('section');card.className='card qa-window';card.setAttribute('data-question-number',questionCount);card.innerHTML=renderResult(q,r);document.getElementById('history').appendChild(card);input.value='';document.getElementById('questionWindow').classList.add('hidden');card.scrollIntoView({behavior:'smooth',block:'start'});}
+function askAnotherQuestion(){const box=document.getElementById('questionWindow');box.classList.remove('hidden');box.classList.add('next-window');box.querySelector('p.prompt').textContent='ASK ANOTHER QUESTION';box.querySelector('textarea').value='';box.querySelector('textarea').focus();box.scrollIntoView({behavior:'smooth',block:'start'});}
+function closeAnswer(btn){const card=btn.closest('.qa-window');if(card){card.classList.toggle('closed');if(card.classList.contains('closed')){btn.textContent='OPEN';}else{btn.textContent='CLOSE';}}}
+document.getElementById('q').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')answerQuestion();});
+</script>
+</body></html>
