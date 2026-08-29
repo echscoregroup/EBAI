@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ECHS Beneficiary Virtual Assistant — Cdr Test v1.0.7</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#062B5B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>ECHS Beneficiary Virtual Assistant — Cdr Test v1.0.8</title>
 <style>
 :root{--navy:#062B5B;--navy2:#041F43;--ink:#1B2A3A;--muted:#5E6D7D;--bg:#F3F6F9;--card:#fff;--line:#D8E0E8;--answer:#F7FAFD;--green:#147A45;--greenbg:#EEF8F2;--danger:#8A2635}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:17px}
@@ -236,5 +242,13 @@ function askAnotherQuestion(){const box=document.getElementById('questionWindow'
 function closeAnswer(btn){const app=document.getElementById("assistantApp");if(app){app.classList.add("hidden");} document.title="ECHS Beneficiary Virtual Assistant";}
 function toggleHelp(){const p=document.getElementById("helpPanel"),b=document.querySelector(".help-btn");if(!p||!b)return;const open=p.classList.toggle("hidden")===false;b.setAttribute("aria-expanded",open?"true":"false");}
 document.getElementById('q').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')answerQuestion();});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./service-worker.js');
+  });
+}
 </script>
 </body></html>
