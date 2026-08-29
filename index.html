@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ECHS Beneficiary Virtual Assistant — Cdr Test v1.0.6</title>
+<title>ECHS Beneficiary Virtual Assistant — Cdr Test v1.0.7</title>
 <style>
 :root{--navy:#062B5B;--navy2:#041F43;--ink:#1B2A3A;--muted:#5E6D7D;--bg:#F3F6F9;--card:#fff;--line:#D8E0E8;--answer:#F7FAFD;--green:#147A45;--greenbg:#EEF8F2;--danger:#8A2635}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:17px}
@@ -229,7 +229,9 @@ function renderResult(q,r){let html='<div class="label">YOUR QUESTION</div><div 
  if(r.v)html+='<div class="video-card"><div class="video-kicker">VERIFIED VIDEO</div><div class="video-title">VIDEO #'+esc(r.v.number)+' — '+esc(r.v.title)+'</div><a class="video" target="_blank" rel="noopener noreferrer" href="'+r.v.url+'">WATCH VIDEO — STARTS AT '+esc(r.v.time)+'</a></div>';
  html+='<div class="instruction">Click <strong>ASK ANOTHER QUESTION</strong> to continue. click <strong>CLOSE</strong> to exit.</div>';
  html+='<div class="post-actions"><button onclick="askAnotherQuestion()">ASK ANOTHER QUESTION</button><button class="secondary" onclick="closeAnswer(this)">CLOSE</button></div>'; return html;}
-function answerQuestion(){const input=document.querySelector('#questionWindow textarea');if(!input)return;const q=input.value.trim();if(!q){input.focus();return;}const r=getResult(q);questionCount++;const card=document.createElement('section');card.className='card qa-window';card.setAttribute('data-question-number',questionCount);card.innerHTML=renderResult(q,r);document.getElementById('history').appendChild(card);input.value='';document.getElementById('questionWindow').classList.add('hidden');card.scrollIntoView({behavior:'smooth',block:'start'});}
+const PILOT_LOG_URL="https://script.google.com/macros/s/AKfycbx9Y3Q2gu87W31gra3rUPR3E7byXz5Umpem_WyRTjTQyDS7bMs4AW3Pt88fPoA60QunrQ/exec";
+function logPilotQA(question,answer){try{const payload=JSON.stringify({question:question,answer:answer});fetch(PILOT_LOG_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:payload,keepalive:true}).catch(()=>{});}catch(e){}}
+function answerQuestion(){const input=document.querySelector('#questionWindow textarea');if(!input)return;const q=input.value.trim();if(!q){input.focus();return;}const r=getResult(q);logPilotQA(q,r.a);questionCount++;const card=document.createElement('section');card.className='card qa-window';card.setAttribute('data-question-number',questionCount);card.innerHTML=renderResult(q,r);document.getElementById('history').appendChild(card);input.value='';document.getElementById('questionWindow').classList.add('hidden');card.scrollIntoView({behavior:'smooth',block:'start'});}
 function askAnotherQuestion(){const box=document.getElementById('questionWindow');box.classList.remove('hidden');box.classList.add('next-window');box.querySelector('p.prompt').textContent='ASK ANOTHER QUESTION';box.querySelector('textarea').value='';box.querySelector('textarea').focus();box.scrollIntoView({behavior:'smooth',block:'start'});}
 function closeAnswer(btn){const app=document.getElementById("assistantApp");if(app){app.classList.add("hidden");} document.title="ECHS Beneficiary Virtual Assistant";}
 function toggleHelp(){const p=document.getElementById("helpPanel"),b=document.querySelector(".help-btn");if(!p||!b)return;const open=p.classList.toggle("hidden")===false;b.setAttribute("aria-expanded",open?"true":"false");}
