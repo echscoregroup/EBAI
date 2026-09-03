@@ -42,6 +42,7 @@ const RULE={
  pcTreatment:"Treatment is available at the ECHS Polyclinic (PC).",
  referralDefinition:"A referral is an authorisation to get treatment at an Empanelled Hospital (EH) for beneficiaries.",
  pcReferral:"The ECHS Polyclinic (PC) issues referrals based on the doctor's advice.",
+ q08Variant:"Referral can be obtained from any ECHS Polyclinic in India.",
  emergency:"In a medical emergency, a valid ECHS Card or valid Temporary Slip permits direct treatment at Military Hospital (MH) or Empanelled Hospital (EH) without Polyclinic (PC) referral. Age is not a condition.",
  medicines:"Medicines are issued by the ECHS Polyclinic (PC), irrespective of where the prescription was issued. A prescription may be from an ECHS Polyclinic (PC), Empanelled Hospital (EH) or Military Hospital (MH).",
  ehBelow70:"For non-emergency OPD consultation with a specialist at an Empanelled Hospital (EH), a beneficiary below 70 years requires a Polyclinic (PC) referral.",
@@ -142,6 +143,15 @@ function getResult(q){
  // Direct generic referral intent: "where/how/who can I get a referral" means PC issues it.
  // Keep the one-word/very short "Referral?" ambiguous.
  const referralIntent=/\b(?:referral|refer|referred)\b/.test(x);
+
+ // ISOLATED VARIANT PILOT — V143 Q08.
+ // Only alternate phrasings referring to any/another/different/own Polyclinic are mapped here.
+ const q08Variant =
+   /\breferral\b/.test(x) && /\bpolyclinic\b/.test(x) &&
+   /\b(?:any|another|different|own|parent)\b/.test(x) &&
+   /\b(?:can|could|do|does|is|are|must|have|need|required|get|obtain|issue|give|use)\b/.test(x);
+ if(q08Variant && !mh && !eh) return {a:RULE.q08Variant};
+
  const referralQuestion=/\b(?:where|how|who|which|can|do|does|will|need|required|get|obtain|issue|issues|gives|give)\b/.test(x);
  if(referralIntent && referralQuestion &&
     !mh && !eh &&
